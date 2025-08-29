@@ -62,6 +62,16 @@
   "engines": {
     "node": ">=20.0.0"
   },
+  "files": [
+    "index.js",
+    "utils/",
+    "README.md",
+    "LICENSE",
+    "docs/GUIDE.md",
+    "docs/SETUP.md",
+    "docs/TESTING.md",
+    "docs/DEPENDENCY_MONITORING.md"
+  ],
   "lint-staged": {
     "*.{js,json,md,yml,yaml}": [
       "prettier --write"
