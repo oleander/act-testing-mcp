@@ -1,7 +1,9 @@
 # Act Testing MCP
 
-[![npm version](https://badge.fury.io/js/act-testing-mcp.svg)](https://badge.fury.io/js/act-testing-mcp)
+[![npm version](https://img.shields.io/npm/v/act-testing-mcp.svg)](https://www.npmjs.com/package/act-testing-mcp)
+[![npm downloads](https://img.shields.io/npm/dm/act-testing-mcp.svg)](https://www.npmjs.com/package/act-testing-mcp)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![CI](https://github.com/GarthDB/act-testing-mcp/workflows/CI/badge.svg)](https://github.com/GarthDB/act-testing-mcp/actions)
 
 Model Context Protocol (MCP) server for testing GitHub Actions workflows locally using [nektos/act](https://github.com/nektos/act).
 
