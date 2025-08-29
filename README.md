@@ -76,10 +76,7 @@ Add to your MCP configuration (e.g., `.cursor/mcp.json` for Cursor IDE):
   "mcpServers": {
     "act-testing": {
       "command": "npx",
-      "args": ["act-testing-mcp"],
-      "env": {
-        "PROJECT_ROOT": "/path/to/your/project"
-      }
+      "args": ["act-testing-mcp"]
     }
   }
 }
@@ -91,7 +88,20 @@ Add to your MCP configuration (e.g., `.cursor/mcp.json` for Cursor IDE):
 {
   "mcpServers": {
     "act-testing": {
-      "command": "act-testing-mcp",
+      "command": "act-testing-mcp"
+    }
+  }
+}
+```
+
+#### Option 3: With custom project path (if needed)
+
+```json
+{
+  "mcpServers": {
+    "act-testing": {
+      "command": "npx",
+      "args": ["act-testing-mcp"],
       "env": {
         "PROJECT_ROOT": "/path/to/your/project"
       }
@@ -100,7 +110,7 @@ Add to your MCP configuration (e.g., `.cursor/mcp.json` for Cursor IDE):
 }
 ```
 
-#### Option 3: Local development
+#### Option 4: Local development
 
 ```json
 {
@@ -117,7 +127,7 @@ Add to your MCP configuration (e.g., `.cursor/mcp.json` for Cursor IDE):
 }
 ```
 
-> **Note**: Using `npx` (Option 1) is recommended as it avoids PATH issues and ensures you always use the latest version. This resolves common NPX availability problems in IDEs as mentioned in [continuedev/continue#4791](https://github.com/continuedev/continue/issues/4791).
+> **Note**: Using `npx` (Option 1) is recommended as it avoids PATH issues and ensures you always use the latest version. The MCP server automatically detects the current working directory, so `PROJECT_ROOT` is only needed if you want to override the default behavior. This approach mirrors other MCP servers like [Browser MCP](https://docs.browsermcp.io/setup-server#cursor) and resolves common NPX availability problems as mentioned in [continuedev/continue#4791](https://github.com/continuedev/continue/issues/4791).
 
 ### Act Configuration
 
