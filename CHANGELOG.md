@@ -1,5 +1,15 @@
 # act-testing-mcp
 
+## 1.1.2
+
+### Patch Changes
+
+- [#8](https://github.com/GarthDB/act-testing-mcp/pull/8) [`1b67363`](https://github.com/GarthDB/act-testing-mcp/commit/1b673639d0521b7e234ab21c93acc798d0fa8ada) Thanks [@GarthDB](https://github.com/GarthDB)! - fix: update npm badge and add status badges
+  - Replace broken badge.fury.io npm badge with reliable shields.io version
+  - Add npm downloads badge to show package adoption
+  - Add CI status badge for build health visibility
+  - Improve README presentation and discoverability
+
 ## 1.1.1
 
 ### Patch Changes
