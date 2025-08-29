@@ -49,5 +49,12 @@ jobs:
       - name: Run tests with coverage
         run: pnpm test:coverage
 
+      - name: Create act baseline if missing
+        run: |
+          if [ ! -f ".act-baseline.json" ]; then
+            echo "Creating baseline for CI environment..."
+            pnpm compatibility:baseline
+          fi
+
       - name: Check act compatibility
         run: pnpm compatibility:check

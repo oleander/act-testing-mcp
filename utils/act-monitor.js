@@ -2,10 +2,7 @@ import { writeFileSync, readFileSync, existsSync } from "fs";
 import { join } from "path";
 import { runActCommand, PROJECT_ROOT, isActAvailable } from "./act-helpers.js";
 
-const BASELINE_FILE = join(
-  PROJECT_ROOT,
-  "tools/act-testing-mcp/.act-baseline.json",
-);
+const BASELINE_FILE = join(PROJECT_ROOT, ".act-baseline.json");
 
 /**
  * Create a baseline snapshot of act behavior for future comparison
