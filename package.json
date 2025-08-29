@@ -1,6 +1,6 @@
 {
   "name": "act-testing-mcp",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "MCP server for testing GitHub Actions workflows locally using nektos/act",
   "type": "module",
   "main": "index.js",
