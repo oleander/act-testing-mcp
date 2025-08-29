@@ -1,5 +1,18 @@
 # act-testing-mcp
 
+## 1.1.1
+
+### Patch Changes
+
+- [#5](https://github.com/GarthDB/act-testing-mcp/pull/5) [`2957e9c`](https://github.com/GarthDB/act-testing-mcp/commit/2957e9c3c7d3cae3bbeaff0cc4e8074c3e38f92a) Thanks [@GarthDB](https://github.com/GarthDB)! - Simplify MCP configuration to match community standards
+  - Remove PROJECT_ROOT requirement from default configuration
+  - Follow Browser MCP pattern with simple npx setup
+  - Add PROJECT_ROOT as optional override for specific use cases
+  - Update example configuration to be path-agnostic
+  - Reference Browser MCP documentation for consistency
+
+  This makes the setup much simpler for most users while still providing flexibility when needed. The new default configuration works out of the box without requiring project-specific paths, following established MCP community patterns.
+
 ## 1.1.0
 
 ### Minor Changes
