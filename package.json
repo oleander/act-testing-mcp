@@ -18,7 +18,7 @@
     "compatibility:report": "node scripts/check-act-compatibility.js report",
     "changeset": "changeset",
     "changeset:version": "changeset version && pnpm install --lockfile-only",
-    "changeset:publish": "pnpm run test && changeset publish",
+    "changeset:publish": "pnpm run test && changeset publish --provenance",
     "release": "pnpm run changeset:version && pnpm run changeset:publish",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -61,6 +61,9 @@
   "homepage": "https://github.com/GarthDB/act-testing-mcp#readme",
   "engines": {
     "node": ">=20.0.0"
+  },
+  "publishConfig": {
+    "provenance": true
   },
   "files": [
     "index.js",

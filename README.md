@@ -17,6 +17,7 @@ This MCP provides AI assistants (like Claude) with direct access to test GitHub 
 - **🎭 Custom Events**: Test workflows with custom event data to simulate different scenarios
 - **🐛 Debug Support**: Detailed logging and error reporting
 - **📊 Dependency Monitoring**: Track `act` compatibility and detect breaking changes
+- **🔐 Supply Chain Security**: Published with npm provenance attestations for verifiable builds
 
 ## Prerequisites
 
@@ -46,6 +47,14 @@ choco install act-cli
 npm install -g act-testing-mcp
 ```
 
+### Verifying Package Integrity
+
+This package is published with [npm provenance](https://docs.npmjs.com/generating-provenance-statements) for enhanced supply-chain security. You can verify the package's attestations:
+
+```bash
+npm audit signatures
+```
+
 Or clone and run locally:
 
 ```bash
@@ -59,6 +68,39 @@ npm install
 ### MCP Setup
 
 Add to your MCP configuration (e.g., `.cursor/mcp.json` for Cursor IDE):
+
+#### Option 1: Using npx (Recommended)
+
+```json
+{
+  "mcpServers": {
+    "act-testing": {
+      "command": "npx",
+      "args": ["act-testing-mcp"],
+      "env": {
+        "PROJECT_ROOT": "/path/to/your/project"
+      }
+    }
+  }
+}
+```
+
+#### Option 2: Using global installation
+
+```json
+{
+  "mcpServers": {
+    "act-testing": {
+      "command": "act-testing-mcp",
+      "env": {
+        "PROJECT_ROOT": "/path/to/your/project"
+      }
+    }
+  }
+}
+```
+
+#### Option 3: Local development
 
 ```json
 {
@@ -75,12 +117,18 @@ Add to your MCP configuration (e.g., `.cursor/mcp.json` for Cursor IDE):
 }
 ```
 
+> **Note**: Using `npx` (Option 1) is recommended as it avoids PATH issues and ensures you always use the latest version. This resolves common NPX availability problems in IDEs as mentioned in [continuedev/continue#4791](https://github.com/continuedev/continue/issues/4791).
+
 ### Act Configuration
 
 Create an `.actrc` file in your project root (copy from the example):
 
 ```bash
+# Copy example configuration and customize paths
 cp mcp-config.example.json .cursor/mcp.json
+# Edit .cursor/mcp.json to set your PROJECT_ROOT path
+
+# Copy act configuration (optional)
 cp .actrc /path/to/your/project/.actrc
 ```
 

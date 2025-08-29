@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "act-testing": {
+      "command": "npx",
+      "args": ["act-testing-mcp"],
+      "env": {
+        "PROJECT_ROOT": "/path/to/your/project"
+      }
+    }
+  }
+}
