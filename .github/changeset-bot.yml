@@ -1,0 +1,33 @@
+updateMessage: |
+  All changesets have been processed and this PR is ready to merge!
+
+  The following changesets were found:
+
+noneMessage: |
+  No changesets found in this PR. 
+
+  If these changes should result in a version bump, you need to add a changeset.
+
+  This may not be necessary if:
+  - This PR doesn't affect the published package (e.g., only editing README or other docs)
+  - You're making a change that doesn't need to be noted in the changelog (e.g., a typo fix)
+  - This change is already covered by a changeset in another PR
+
+  To create a changeset, run:
+  ```
+  npx changeset
+  ```
+
+  If you're sure this PR doesn't need a changeset, you can ignore this message.
+
+welcomeMessage: |
+  🦋 Changeset detected
+
+  Latest commit: COMMIT_SHA
+
+  **The changes in this PR will be included in the next version bump.**
+
+  This PR includes a changeset to release 1 package:
+  - act-testing-mcp
+
+  Not sure what this means? [Click here to learn what changesets are](https://github.com/changesets/changesets/blob/main/docs/adding-a-changeset.md).

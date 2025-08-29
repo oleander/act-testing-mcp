@@ -28,6 +28,7 @@ act pull_request --eventpath event.json -W .github/workflows/enhance-sync-pr.yml
 - "Test my CI workflow"
 - "Run the changeset-lint workflow"
 - "Check if the enhance-sync-pr workflow works with a custom PR title"
+- "Test the changeset bot workflow"
 - "Debug why my release workflow is failing"
 - "Test all token diff workflows"
 
