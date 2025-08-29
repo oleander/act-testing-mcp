@@ -1,0 +1,50 @@
+{
+  "name": "act-testing-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for testing GitHub Actions workflows locally using nektos/act",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "act-testing-mcp": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "ava test/**/*.test.js",
+    "test:coverage": "c8 ava test/**/*.test.js",
+    "test:watch": "ava test/**/*.test.js --watch",
+    "dev": "node --inspect index.js",
+    "compatibility:baseline": "node scripts/check-act-compatibility.js create-baseline",
+    "compatibility:check": "node scripts/check-act-compatibility.js check",
+    "compatibility:report": "node scripts/check-act-compatibility.js report"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "ava": "^6.4.0",
+    "c8": "^10.1.2"
+  },
+  "keywords": [
+    "mcp",
+    "github-actions",
+    "act",
+    "testing",
+    "model-context-protocol",
+    "nektos-act",
+    "workflow-testing",
+    "ci-cd"
+  ],
+  "author": "Garth Braithwaite",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GarthDB/act-testing-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/GarthDB/act-testing-mcp/issues"
+  },
+  "homepage": "https://github.com/GarthDB/act-testing-mcp#readme",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
