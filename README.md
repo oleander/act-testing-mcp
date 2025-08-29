@@ -17,6 +17,7 @@ This MCP provides AI assistants (like Claude) with direct access to test GitHub 
 - **🎭 Custom Events**: Test workflows with custom event data to simulate different scenarios
 - **🐛 Debug Support**: Detailed logging and error reporting
 - **📊 Dependency Monitoring**: Track `act` compatibility and detect breaking changes
+- **🔐 Supply Chain Security**: Published with npm provenance attestations for verifiable builds
 
 ## Prerequisites
 
@@ -44,6 +45,14 @@ choco install act-cli
 
 ```bash
 npm install -g act-testing-mcp
+```
+
+### Verifying Package Integrity
+
+This package is published with [npm provenance](https://docs.npmjs.com/generating-provenance-statements) for enhanced supply-chain security. You can verify the package's attestations:
+
+```bash
+npm audit signatures
 ```
 
 Or clone and run locally:
