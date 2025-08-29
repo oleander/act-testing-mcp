@@ -93,6 +93,7 @@ Lists all available GitHub Actions workflows in the repository.
 **Parameters:** None
 
 **Example:**
+
 ```
 📋 **CI** (ci.yml)
    Job: test (test)
@@ -108,6 +109,7 @@ Lists all available GitHub Actions workflows in the repository.
 Runs a workflow locally using act.
 
 **Parameters:**
+
 - `workflow` (required): Workflow file name or job ID
 - `event` (optional): Event type (push, pull_request, etc.)
 - `dryRun` (optional): Show execution plan without running
@@ -117,6 +119,7 @@ Runs a workflow locally using act.
 - `eventData` (optional): Custom event data for testing
 
 **Examples:**
+
 ```bash
 # Run CI workflow
 run_workflow workflow="ci.yml" event="push"
@@ -133,6 +136,7 @@ run_workflow workflow="release.yml" env='{"NODE_ENV": "production"}'
 Validates workflow syntax and structure.
 
 **Parameters:**
+
 - `workflow` (required): Workflow file name to validate
 
 ### `act_doctor`
@@ -147,10 +151,10 @@ Checks act configuration and Docker setup.
 
 Once configured, you can ask your AI assistant to test workflows directly:
 
-- *"Test my CI workflow"*
-- *"Run the release workflow in dry-run mode"*
-- *"Check if my new workflow file is valid"*
-- *"Test the pull request workflow with custom PR data"*
+- _"Test my CI workflow"_
+- _"Run the release workflow in dry-run mode"_
+- _"Check if my new workflow file is valid"_
+- _"Test the pull request workflow with custom PR data"_
 
 ### Direct Usage
 

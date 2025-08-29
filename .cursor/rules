@@ -1,0 +1,250 @@
+# Act Testing MCP - Cursor Rules
+
+## Project Overview
+This is the Act Testing MCP project, a standalone Model Context Protocol (MCP) server for testing GitHub Actions workflows locally using nektos/act.
+
+## Required Tools & Standards
+- **Testing**: AVA (required for all JavaScript testing)
+- **Package Management**: pnpm (never use npm or yarn)
+- **Release Management**: changesets (for version bumps and releases)
+- **Commit Messages**: commitlint with conventional commits (required for all git commits)
+- **Code Formatting**: prettier with automatic formatting on commit
+- **Git Hooks**: husky for pre-commit and commit-msg validation
+- **Node.js Version**: >=20.0.0
+
+## Architecture
+- **Standalone Tool**: Single package with utilities and comprehensive testing
+- **Testing**: AVA with specific configuration requirements
+- **ESM**: Project uses ES modules (type: "module")
+- **MCP Protocol**: Uses @modelcontextprotocol/sdk for tool integration
+
+## Coding Standards
+
+### JavaScript
+- Use ES modules (import/export syntax)
+- Prefer const over let, never use var
+- Use async/await over Promise chains
+- Use template literals for string interpolation
+- Follow prettier configuration for formatting
+
+### Testing Guidelines
+- All tests must use AVA framework
+- Test files must follow pattern: `test/**/*.test.js`
+- Use descriptive test names
+- Set up proper test environment variables
+- Tests should gracefully handle missing dependencies (act, docker)
+
+### Commit Message Guidelines
+- All commits must follow conventional commit format
+- Use format: `type(scope): description`
+- Available types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `perf`, `ci`, `build`, `revert`
+- Scope is optional but recommended for clarity
+- Description should be present tense and lowercase
+- Breaking changes must include `!` after type/scope or `BREAKING CHANGE:` in footer
+- Examples: `feat(mcp): add new workflow validation`, `fix(helpers): handle edge case`
+
+### Package Management
+- Always use pnpm commands (never npm or yarn)
+- Keep pnpm-lock.yaml in version control
+- Use specific versions for critical dependencies
+
+### File Structure
+- Main MCP server: `index.js`
+- Utility modules: `utils/`
+- Test files: `test/`
+- Documentation: `docs/`
+- Scripts: `scripts/`
+
+## Development Workflow
+
+### Testing
+- Use `pnpm test` to run tests
+- Use `pnpm test:coverage` for coverage reports
+- Tests should be thorough and descriptive
+- Mock external dependencies appropriately
+- Use AVA's built-in assertions
+
+### Version Management
+- Use changesets for all version bumps
+- Create changesets with `pnpm changeset`
+- Never manually edit version numbers
+- Follow semantic versioning
+
+### Commit Message Management
+- Use conventional commit format for all commits
+- Commit messages are validated by commitlint
+- Pre-commit hooks will format code automatically
+- Use appropriate commit types and scopes
+- Include breaking change indicators when needed
+
+### Release Process
+- Changesets automatically create release PRs
+- GitHub Actions handle automated publishing to npm
+- CI runs tests and formatting checks on all PRs
+
+## Code Suggestions
+
+### Preferred Patterns
+```javascript
+// Preferred: ES modules
+import { execSync } from 'child_process';
+export function myFunction() {}
+
+// Preferred: Async/await
+async function runCommand() {
+  try {
+    const result = await execCommand();
+    return result;
+  } catch (error) {
+    console.error('Command failed:', error);
+  }
+}
+
+// Preferred: Template literals
+const message = `Command executed: ${command}`;
+
+// Preferred: Destructuring
+const { success, output, error } = commandResult;
+```
+
+### AVA Test Patterns
+```javascript
+// Preferred test structure
+import test from 'ava';
+import { runActCommand } from '../utils/act-helpers.js';
+
+test('runActCommand should return proper structure', t => {
+  const result = runActCommand(['--help']);
+  t.true(typeof result.success === 'boolean');
+  t.true(typeof result.output === 'string');
+});
+
+test('runActCommand should handle errors gracefully', t => {
+  const result = runActCommand(['--invalid-flag']);
+  t.false(result.success);
+  t.true(result.error.length > 0);
+});
+```
+
+### MCP Tool Patterns
+```javascript
+// Preferred MCP tool structure
+server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  const { name, arguments: args } = request.params;
+  
+  try {
+    switch (name) {
+      case "list_workflows":
+        return {
+          content: [{
+            type: "text",
+            text: "Workflow list results..."
+          }]
+        };
+      default:
+        throw new Error(`Unknown tool: ${name}`);
+    }
+  } catch (error) {
+    return {
+      content: [{
+        type: "text",
+        text: `Error: ${error.message}`
+      }]
+    };
+  }
+});
+```
+
+## File-Specific Guidelines
+
+### package.json
+- Include "type": "module" for ESM
+- Specify Node.js version in engines
+- Include proper repository, author, license fields
+- Use pnpm in packageManager field
+- Include comprehensive scripts for development
+
+### ava.config.js
+- Use export default syntax
+- Include standard configuration options
+- Set NODE_ENV to "test"
+- Use verbose output for debugging
+- Set appropriate timeout for slow tests
+
+## Anti-Patterns to Avoid
+
+### Prohibited Commands
+- `npm install` or `yarn install` (use `pnpm install`)
+- `npm run` or `yarn run` (use `pnpm run`)
+- Manual version bumps (use changesets)
+- Non-conventional commit messages (use proper format)
+
+### Prohibited Patterns
+```javascript
+// Avoid: CommonJS in new code
+const fs = require('fs');
+module.exports = function() {};
+
+// Avoid: var declarations
+var message = 'Hello';
+
+// Avoid: Promise chains when async/await is cleaner
+execCommand()
+  .then(result => processResult(result))
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+```
+
+## Dependencies
+- Keep dependencies minimal and focused
+- Prefer Node.js built-in modules when possible
+- Use @modelcontextprotocol/sdk for MCP functionality
+- Keep devDependencies up to date for tooling
+
+## Documentation
+- Maintain comprehensive README.md
+- Document all MCP tools and their parameters
+- Keep CHANGELOG.md updated via changesets
+- Include setup and usage guides in docs/
+
+## Error Handling
+- Use descriptive error messages
+- Handle edge cases gracefully (missing act, docker, workflows)
+- Log errors appropriately
+- Use try/catch blocks for async operations
+- Provide helpful guidance in error messages
+
+## Code Style
+- Use 2-space indentation
+- Use double quotes for strings (follow prettier config)
+- Include trailing commas in multiline objects/arrays
+- Use meaningful variable and function names
+- Keep functions focused and small
+
+## MCP Integration
+- Follow MCP protocol standards
+- Provide clear tool descriptions and schemas
+- Handle errors gracefully and return meaningful messages
+- Use proper content types in responses
+- Test MCP integration thoroughly
+
+## Act Integration
+- Handle cases where act is not installed
+- Provide helpful setup instructions
+- Support various act configurations
+- Test with different workflow scenarios
+- Handle Docker-related issues gracefully
+
+## When Making Changes
+1. Run tests with `pnpm test`
+2. Use conventional commit message format
+3. Create changesets for version bumps
+4. Update documentation as needed
+5. Ensure pre-commit hooks pass (formatting, linting)
+6. Test MCP integration manually when needed
+
+## IDE Integration
+- Use prettier for automatic formatting
+- Respect the project's .gitignore patterns
+- Enable conventional commit validation
+- Use AVA test runner integration when available

@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       message:
-        description: 'Custom message to display'
+        description: "Custom message to display"
         required: false
-        default: 'Hello from act-testing-mcp!'
+        default: "Hello from act-testing-mcp!"
         type: string
       environment:
-        description: 'Target environment'
+        description: "Target environment"
         required: true
-        default: 'development'
+        default: "development"
         type: choice
         options:
           - development
@@ -21,64 +21,64 @@ on:
 jobs:
   demo:
     runs-on: ubuntu-latest
-    
+
     env:
       CUSTOM_MESSAGE: ${{ github.event.inputs.message }}
       TARGET_ENV: ${{ github.event.inputs.environment }}
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Display custom message
-      run: |
-        echo "🎉 Custom message: $CUSTOM_MESSAGE"
-        echo "🎯 Target environment: $TARGET_ENV"
-        echo "📅 Triggered at: $(date)"
-        
-    - name: Environment-specific steps
-      run: |
-        case "$TARGET_ENV" in
-          "development")
-            echo "🛠️  Running development tasks..."
-            echo "- Installing dev dependencies"
-            echo "- Running in watch mode"
-            ;;
-          "staging")
-            echo "🧪 Running staging tasks..."
-            echo "- Running full test suite"
-            echo "- Deploying to staging server"
-            ;;
-          "production")
-            echo "🚀 Running production tasks..."
-            echo "- Running production build"
-            echo "- Deploying to production"
-            echo "- Sending notifications"
-            ;;
-        esac
-        
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        
-    - name: Show system info
-      run: |
-        echo "📊 System Information:"
-        echo "- Node.js version: $(node --version)"
-        echo "- npm version: $(npm --version)"
-        echo "- OS: $(uname -a)"
-        echo "- Available disk space: $(df -h / | awk 'NR==2{print $4}')"
-        
-    - name: Demonstrate act-testing-mcp usage
-      run: |
-        echo "🔧 This workflow demonstrates act-testing-mcp capabilities:"
-        echo ""
-        echo "✅ Custom input handling"
-        echo "✅ Environment variables"
-        echo "✅ Conditional logic"
-        echo "✅ Multi-step workflow"
-        echo "✅ System information gathering"
-        echo ""
-        echo "🎯 Perfect for testing with:"
-        echo "  act -W .github/workflows/demo.yml --eventpath custom-event.json"
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Display custom message
+        run: |
+          echo "🎉 Custom message: $CUSTOM_MESSAGE"
+          echo "🎯 Target environment: $TARGET_ENV"
+          echo "📅 Triggered at: $(date)"
+
+      - name: Environment-specific steps
+        run: |
+          case "$TARGET_ENV" in
+            "development")
+              echo "🛠️  Running development tasks..."
+              echo "- Installing dev dependencies"
+              echo "- Running in watch mode"
+              ;;
+            "staging")
+              echo "🧪 Running staging tasks..."
+              echo "- Running full test suite"
+              echo "- Deploying to staging server"
+              ;;
+            "production")
+              echo "🚀 Running production tasks..."
+              echo "- Running production build"
+              echo "- Deploying to production"
+              echo "- Sending notifications"
+              ;;
+          esac
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Show system info
+        run: |
+          echo "📊 System Information:"
+          echo "- Node.js version: $(node --version)"
+          echo "- npm version: $(npm --version)"
+          echo "- OS: $(uname -a)"
+          echo "- Available disk space: $(df -h / | awk 'NR==2{print $4}')"
+
+      - name: Demonstrate act-testing-mcp usage
+        run: |
+          echo "🔧 This workflow demonstrates act-testing-mcp capabilities:"
+          echo ""
+          echo "✅ Custom input handling"
+          echo "✅ Environment variables"
+          echo "✅ Conditional logic"
+          echo "✅ Multi-step workflow"
+          echo "✅ System information gathering"
+          echo ""
+          echo "🎯 Perfect for testing with:"
+          echo "  act -W .github/workflows/demo.yml --eventpath custom-event.json"

@@ -41,3 +41,4 @@ test-results/
 
 # MCP specific
 mcp-*.json
+# Testing GPG signature

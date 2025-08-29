@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "act-testing": {
+      "command": "node",
+      "args": ["./index.js"],
+      "env": {
+        "PROJECT_ROOT": "/Users/garthdb/act-testing-mcp",
+        "ACT_BINARY": "act"
+      }
+    },
+    "act-docs": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github",
+        "--owner",
+        "nektos",
+        "--repo",
+        "act"
+      ]
+    }
+  }
+}

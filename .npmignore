@@ -1,0 +1,55 @@
+# Development and testing files
+test/
+coverage/
+.nyc_output/
+.c8/
+
+# Development configuration
+.husky/
+.changeset/
+.cursor/
+.github/
+.vscode/
+.idea/
+
+# Configuration files
+.prettierrc
+.prettierignore
+commitlint.config.cjs
+ava.config.js
+.c8rc.json
+
+# Environment and build files
+.env
+.env.*
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+/tmp/
+
+# Git files
+.gitignore
+
+# Documentation that's not needed in the package
+docs/SECRETS_SETUP.md
+docs/BRANCH_PROTECTION_SETUP.md
+
+# Scripts not needed for package usage
+scripts/
+
+# Sample/example files
+mcp-config.example.json
+.actrc
+
+# Test artifacts
+.act-baseline.json
