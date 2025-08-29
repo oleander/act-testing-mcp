@@ -11,11 +11,15 @@ on:
 
 jobs:
   test:
+    name: CI Tests and Checks
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          # For pull_request_target, we need to checkout the PR head
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Setup Node.js 20
         uses: actions/setup-node@v4
