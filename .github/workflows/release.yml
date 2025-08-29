@@ -10,6 +10,7 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 permissions:
   contents: write
   pull-requests: write
+  actions: write # Allow triggering workflows
   id-token: write # Required for npm provenance
 
 jobs:
