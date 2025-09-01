@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/garthdb-act-testing-mcp-badge.png)](https://mseep.ai/app/garthdb-act-testing-mcp)
+
 # Act Testing MCP
 
 [![npm version](https://img.shields.io/npm/v/act-testing-mcp.svg)](https://www.npmjs.com/package/act-testing-mcp)
