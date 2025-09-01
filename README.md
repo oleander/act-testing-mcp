@@ -1,4 +1,4 @@
-[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/garthdb-act-testing-mcp-badge.png)](https://mseep.ai/app/garthdb-act-testing-mcp)
+[![Verified on MseeP](https://mseep.ai/badge.svg)](https://mseep.ai/app/f18a0332-2186-49a9-a29d-c0de85307440)
 
 # Act Testing MCP
 
