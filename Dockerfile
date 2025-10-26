@@ -31,8 +31,9 @@ ENV NODE_ENV=production \
 
 COPY --from=act-installer /usr/local/bin/act /usr/local/bin/act
 
+ARG MCP_METADATA
 COPY mcp-metadata.json .
-LABEL io.docker.server.metadata="$(cat mcp-metadata.json)"
+LABEL io.docker.server.metadata="$MCP_METADATA"
 
 COPY --from=deps /app/node_modules ./node_modules
 

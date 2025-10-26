@@ -14,6 +14,8 @@ run-container: build-mcp
     -v ./:/app \
     "${IMAGE}"
 build-mcp:
-    docker build -t "${IMAGE}" .
+    docker build \
+        --build-arg MCP_METADATA="$(cat mcp-metadata.json)" \
+        -t "${IMAGE}" .
 test-container-act:
     docker run --rm "${IMAGE}" act --version

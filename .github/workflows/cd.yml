@@ -33,12 +33,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Read MCP metadata
+        id: mcp-metadata
+        run: echo "metadata<<EOF" >> $GITHUB_OUTPUT && cat mcp-metadata.json >> $GITHUB_OUTPUT && echo "EOF" >> $GITHUB_OUTPUT
+
       - uses: docker/build-push-action@v6
         with:
           pull: true
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ env.BASE_IMAGE_TAG }}
-          build-args: ACT_VERSION=${{ env.ACT_VERSION }}
+          build-args: |
+            ACT_VERSION=${{ env.ACT_VERSION }}
+            MCP_METADATA=${{ steps.mcp-metadata.outputs.metadata }}
           cache-from: type=gha,type=registry,ref=${{ env.BASE_IMAGE_TAG }}
           cache-to: type=gha,mode=max
