@@ -37,7 +37,8 @@ LABEL io.docker.server.metadata="${MCP_METADATA}"
 
 COPY --from=deps /app/node_modules ./node_modules
 
-COPY package.json index.js utils/ ./
+COPY package.json index.js ./
+COPY utils/ ./utils/
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD node -e "process.exit(0)"
