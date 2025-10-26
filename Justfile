@@ -1,5 +1,5 @@
 
-IMAGE := "oleander/act-testing-mcp:latest"
+export IMAGE := "oleander/act-testing-mcp:latest"
 
 run-gateway:
     docker mcp gateway run --servers "docker://${IMAGE}"
