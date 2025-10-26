@@ -11,7 +11,7 @@ FROM alpine:3.20 AS act-installer
 RUN apk add --no-cache ca-certificates curl tar && \
     update-ca-certificates
 
-ARG ACT_VERSION="0.2.61"
+ARG ACT_VERSION="0.2.82"
 ARG TARGETARCH
 
 ENV ARC=${TARGETARCH/amd64/x86_64}
@@ -32,16 +32,14 @@ ENV NODE_ENV=production \
     PROJECT_ROOT=/workspace \
     ACT_BINARY=/usr/local/bin/act
 
+COPY mcp-metadata.json .
+LABEL io.docker.server.metadata="$(cat mcp-metadata.json)"
+
 COPY --from=deps /app/node_modules ./node_modules
-COPY package.json ./package.json
-COPY index.js ./index.js
-COPY utils ./utils
-COPY mcp-metadata.json ./mcp-metadata.json
+COPY package.json index.js package-lock.json utils/ ./
 
 COPY --from=act-installer /usr/local/bin/act /usr/local/bin/act
 
-ARG METADATA
-LABEL io.docker.server.metadata="$METADATA"
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD node -e "process.exit(0)"
