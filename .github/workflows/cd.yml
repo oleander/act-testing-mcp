@@ -10,6 +10,10 @@ permissions:
   contents: read
   packages: write
 
+concurrency:
+  group: ${{ github.workflow }}-cd
+  cancel-in-progress: true
+
 env:
   BASE_IMAGE_TAG: ghcr.io/${{ github.repository_owner }}/act-testing-mcp:latest
   ACT_VERSION: "0.2.82"

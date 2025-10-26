@@ -1,16 +1,12 @@
 name: act-testing-mcp
 description: MCP server for testing GitHub Actions workflows locally using nektos/act
+
+longLived: true
+
 command:
   - node
   - index.js
-env:
-  - name: PROJECT_ROOT
-    value: "{{act-testing-mcp.project-root}}"
-  - name: NODE_ENV
-    value: production
-secrets:
-  - name: act-testing-mcp.GITHUB_TOKEN
-    env: GITHUB_TOKEN
+
 config:
   - name: act-testing-mcp
     type: object
@@ -21,3 +17,34 @@ config:
         default: /workspace
     required:
       - project-root
+
+env:
+  - name: PROJECT_ROOT
+    value: "{{act-testing-mcp.project-root}}"
+  - name: NODE_ENV
+    value: production
+  - name: ACT_BINARY
+    value: /usr/local/bin/act
+
+volumes:
+  - "{{act-testing-mcp.project-root}}:{{act-testing-mcp.project-root}}"
+  - "act-cache:/root/.cache/act"
+  - "/var/run/docker.sock:/var/run/docker.sock"
+
+secrets:
+  - name: act-testing-mcp.GITHUB_TOKEN
+    env: GITHUB_TOKEN
+  - name: act-testing-mcp.NPM_TOKEN
+    env: NPM_TOKEN
+  - name: act-testing-mcp.DOCKER_TOKEN
+    env: DOCKER_TOKEN
+  - name: act-testing-mcp.AWS_ACCESS_KEY_ID
+    env: AWS_ACCESS_KEY_ID
+  - name: act-testing-mcp.AWS_SECRET_ACCESS_KEY
+    env: AWS_SECRET_ACCESS_KEY
+  - name: act-testing-mcp.GITLAB_TOKEN
+    env: GITLAB_TOKEN
+  - name: act-testing-mcp.AZURE_DEVOPS_TOKEN
+    env: AZURE_DEVOPS_TOKEN
+  - name: act-testing-mcp.CODECOV_TOKEN
+    env: CODECOV_TOKEN
