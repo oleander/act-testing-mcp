@@ -35,7 +35,7 @@ jobs:
 
       - name: Read MCP metadata
         id: mcp-metadata
-        run: echo "metadata<<EOF" >> $GITHUB_OUTPUT && cat mcp-metadata.json >> $GITHUB_OUTPUT && echo "EOF" >> $GITHUB_OUTPUT
+        run: echo "metadata<<EOF" >> $GITHUB_OUTPUT && cat mcp-metadata.yaml >> $GITHUB_OUTPUT && echo "EOF" >> $GITHUB_OUTPUT
 
       - uses: docker/build-push-action@v6
         with:

@@ -1,7 +1,7 @@
 
 export IMAGE := "oleander/act-testing-mcp:latest"
 
-run-gateway:
+run-gateway: build-mcp
     docker mcp gateway run --servers "docker://${IMAGE}"
 call-mcp:
     docker mcp tools call act_doctor
@@ -15,7 +15,12 @@ run-container: build-mcp
     "${IMAGE}"
 build-mcp:
     docker build \
-        --build-arg MCP_METADATA="$(cat mcp-metadata.json)" \
+        --build-arg MCP_METADATA="$(cat mcp-metadata.yaml)" \
         -t "${IMAGE}" .
 test-container-act:
     docker run --rm "${IMAGE}" act --version
+
+docker-pull-mcp-image:
+    docker pull "ghcr.io/${IMAGE}"
+verify-labels: docker-pull-mcp-image
+    docker mcp gateway run --servers "docker://${IMAGE}"
