@@ -35,7 +35,7 @@ ENV NODE_ENV=production \
 COPY --from=act-installer /usr/local/bin/act /usr/local/bin/act
 
 ARG MCP_METADATA
-COPY mcp-metadata.yaml mcp-metadata.json .
+RUN test -n "${MCP_METADATA}" || (echo "Build argument MCP_METADATA is required" && exit 1)
 LABEL io.docker.server.metadata="${MCP_METADATA}"
 
 COPY --from=deps /app/node_modules ./node_modules
