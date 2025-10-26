@@ -201,6 +201,39 @@ Validates workflow syntax and structure.
 
 - `workflow` (required): Workflow file name to validate
 
+### `validate_workflow_content`
+
+Validates workflow YAML content provided as a string.
+
+**Parameters:**
+
+- `yamlContent` (required): Complete YAML workflow content as a string
+
+**Examples:**
+
+```bash
+# Validate dynamically generated workflow
+validate_workflow_content yamlContent='
+name: CI
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm test
+'
+```
+
+**Use Cases:**
+
+- Validating workflows before writing to disk
+- Testing dynamically generated workflows
+- Multi-agent systems that generate workflows programmatically
+- CI/CD pipeline validation in development
+
+**Note:** This tool creates a temporary file in `.github/workflows/` during validation and automatically cleans it up afterward.
+
 ### `act_doctor`
 
 Checks act configuration and Docker setup.
@@ -217,6 +250,8 @@ Once configured, you can ask your AI assistant to test workflows directly:
 - _"Run the release workflow in dry-run mode"_
 - _"Check if my new workflow file is valid"_
 - _"Test the pull request workflow with custom PR data"_
+- _"Validate this workflow YAML: [paste YAML content]"_
+- _"Check if this generated workflow is valid before I save it"_
 
 ### Direct Usage
 
@@ -304,6 +339,51 @@ act-testing-mcp/
     └── DEPENDENCY_MONITORING.md
 ```
 
+## Docker Usage
+
+To run this MCP server as a Docker container:
+
+### Building the Image
+
+```bash
+# Using the build script (recommended)
+npm run docker:build
+
+# Or manually
+./build-docker.sh
+```
+
+### Running the Container
+
+To run the container, you need to mount the Docker socket so it can execute Docker commands:
+
+```bash
+# On Linux (native Docker)
+docker run --rm -it \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -u $(id -u):$(id -g) \
+  oleander/act-testing-mcp:latest
+
+# On macOS (Docker Desktop)
+docker run --rm -it \
+  -v $HOME/.docker/run/docker.sock:/var/run/docker.sock \
+  oleander/act-testing-mcp:latest
+
+# With custom workspace
+docker run --rm -it \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v $(pwd):/workspace \
+  -e PROJECT_ROOT=/workspace \
+  oleander/act-testing-mcp:latest
+```
+
+**Important Notes**:
+- The Docker socket mount is required for act to run Docker containers
+- The container runs as root to access the Docker socket by default
+- On macOS, use `$HOME/.docker/run/docker.sock` as the socket path
+- To run with your host user: `docker run -u $(id -u):$(id -g) ...`
+- If you encounter permission issues on Linux, add your user to the docker group: `sudo usermod -aG docker $USER`
+
 ## Troubleshooting
 
 ### Docker Issues
@@ -314,6 +394,9 @@ docker ps
 
 # Pull required images
 docker pull catthehacker/ubuntu:act-latest
+
+# Test Docker socket access from container
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock docker ps
 ```
 
 ### Act Issues

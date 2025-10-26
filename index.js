@@ -6,7 +6,7 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { existsSync } from "fs";
+import { existsSync, writeFileSync, unlinkSync } from "fs";
 import { join } from "path";
 import {
   runActCommand,
@@ -97,6 +97,21 @@ const tools = [
         },
       },
       required: ["workflow"],
+    },
+  },
+  {
+    name: "validate_workflow_content",
+    description:
+      "Validates GitHub Actions workflow YAML content directly from a string. Returns validation results including syntax errors and warnings.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        yamlContent: {
+          type: "string",
+          description: "The complete YAML workflow content as a string",
+        },
+      },
+      required: ["yamlContent"],
     },
   },
   {
@@ -231,6 +246,60 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               text: result.success
                 ? `✅ Workflow ${workflow} is valid!\n\n${result.output}`
                 : `❌ Workflow ${workflow} has issues:\n\n${result.error}`,
+            },
+          ],
+        };
+      }
+
+      case "validate_workflow_content": {
+        const { yamlContent } = args;
+
+        // Generate unique temporary filename
+        const timestamp = Date.now();
+        const tempFilename = `temp-validate-${timestamp}.yml`;
+        const tempPath = join(PROJECT_ROOT, ".github/workflows", tempFilename);
+
+        let result;
+        try {
+          // Write YAML content to temporary file
+          writeFileSync(tempPath, yamlContent, "utf8");
+
+          // Validate using act (reuse existing logic)
+          result = runActCommand([
+            "--list",
+            "-W",
+            `.github/workflows/${tempFilename}`,
+          ]);
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: `❌ Error validating workflow content: ${error.message}`,
+              },
+            ],
+          };
+        } finally {
+          // Clean up temporary file
+          if (existsSync(tempPath)) {
+            try {
+              unlinkSync(tempPath);
+            } catch (cleanupError) {
+              console.error(
+                `Failed to clean up temp file: ${cleanupError.message}`,
+              );
+            }
+          }
+        }
+
+        // Return formatted results (same format as validate_workflow)
+        return {
+          content: [
+            {
+              type: "text",
+              text: result.success
+                ? `✅ Workflow content is valid!\n\n${result.output}`
+                : `❌ Workflow content has issues:\n\n${result.error}`,
             },
           ],
         };
