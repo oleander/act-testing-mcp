@@ -54,8 +54,8 @@ Container health check:
 ```
 
 ### CD (`.github/workflows/cd.yml`)
-- Trigger: `workflow_run` of CI, `types: [completed]`
-- Condition: only when CI succeeded and head branch is `main`
+- Trigger: `workflow_run` of CI, `types: [completed]`, `branches: [main]`
+- Condition: runs only when CI concluded `success`
 - Permissions: `contents: read`, `packages: write`
 - Env: `BASE_IMAGE_TAG=ghcr.io/<owner>/act-testing-mcp:latest`
 
