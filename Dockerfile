@@ -2,12 +2,12 @@ FROM node:20-alpine AS deps
 
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
-RUN corepack enable && \
-    pnpm install --prod --ignore-scripts --frozen-lockfile
+RUN corepack enable \
+    && pnpm install --prod --ignore-scripts --frozen-lockfile
 
 FROM alpine:3.22 AS act-installer
-RUN apk add --no-cache ca-certificates curl tar && \
-    update-ca-certificates
+RUN apk add --no-cache ca-certificates curl tar \
+    && update-ca-certificates
 
 ARG ACT_VERSION
 ARG TARGETARCH
@@ -44,10 +44,10 @@ COPY package.json index.js ./
 COPY utils/ ./utils/
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD node -e "process.exit(0)"
+    CMD node -e "process.exit(0)"
 
 ENV DOCKER_HOST=unix:///var/run/docker.sock
 RUN mkdir -p /app/.github/workflows
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
-CMD ["node", "index.js"]
+CMD ["node", "index.js"]⏎
