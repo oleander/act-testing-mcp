@@ -41,7 +41,7 @@ jobs:
         with:
           pull: true
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/arm64/v8
           tags: ${{ env.BASE_IMAGE_TAG }}
           build-args: |
             ACT_VERSION=${{ env.ACT_VERSION }}
