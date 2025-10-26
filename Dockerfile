@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package.json ./
 RUN npm install --omit=dev --ignore-scripts --no-audit --no-fund
 
-FROM alpine:3.20 AS act-installer
+FROM alpine:3.22 AS act-installer
 RUN apk add --no-cache ca-certificates curl tar && \
     update-ca-certificates
 
