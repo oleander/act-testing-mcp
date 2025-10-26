@@ -16,6 +16,7 @@ run-container: build-mcp
 build-mcp:
     docker build \
         --build-arg MCP_METADATA="$(cat mcp-metadata.yaml)" \
+        --build-arg ACT_VERSION="0.2.82" \
         -t "${IMAGE}" .
 test-container-act:
     docker run --rm "${IMAGE}" act --version

@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
       - uses: docker/setup-buildx-action@v3
 
@@ -46,5 +46,9 @@ jobs:
           build-args: |
             ACT_VERSION=${{ env.ACT_VERSION }}
             MCP_METADATA=${{ steps.mcp-metadata.outputs.metadata }}
-          cache-from: type=gha,type=registry,ref=${{ env.BASE_IMAGE_TAG }}
-          cache-to: type=gha,mode=max
+          cache-from: |
+            type=gha
+            type=registry,ref=${{ env.BASE_IMAGE_TAG }}
+          cache-to: |
+            type=gha,mode=max
+            type=registry,ref=${{ env.BASE_IMAGE_TAG }},mode=max
