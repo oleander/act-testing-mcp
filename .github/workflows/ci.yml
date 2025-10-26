@@ -147,9 +147,7 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          if docker extension ls >/dev/null 2>&1; then
-            docker extension install docker/mcp-gateway || true
-          fi
+          docker extension install docker/mcp-gateway || true
         continue-on-error: true
 
       - name: Start MCP Gateway
