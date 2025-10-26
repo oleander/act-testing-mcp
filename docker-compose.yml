@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  act-testing-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: act-testing-mcp:latest
+    container_name: act-testing-mcp
+    environment:
+      - NODE_ENV=production
+      - PROJECT_ROOT=/workspace
+      - ACT_BINARY=/usr/local/bin/act
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - ./:/workspace
+      - /var/run/docker.sock:/var/run/docker.sock
+    stdin_open: true
+    tty: true
+    healthcheck:
+      test: ["CMD", "node", "-e", "process.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - mcp-network
+
+networks:
+  mcp-network:
+    driver: bridge

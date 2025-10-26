@@ -51,6 +51,29 @@ choco install act-cli
 npm install -g act-testing-mcp
 ```
 
+## Docker
+
+Run this MCP server as a container for use with the Docker MCP Gateway or directly via Docker.
+
+Quick start:
+
+```bash
+# Build the image
+docker build -t act-testing-mcp:latest .
+
+# Or run with docker-compose
+docker compose up --build
+
+# Use with Docker MCP Gateway (mount project and Docker socket)
+docker mcp gateway run \
+  --servers docker://act-testing-mcp:latest \
+  --volume $(pwd):/workspace \
+  --volume /var/run/docker.sock:/var/run/docker.sock \
+  --env PROJECT_ROOT=/workspace
+```
+
+See `docs/DOCKER.md` for detailed instructions, troubleshooting, and CI setup.
+
 ### Verifying Package Integrity
 
 This package is published with [npm provenance](https://docs.npmjs.com/generating-provenance-statements) for enhanced supply-chain security. You can verify the package's attestations:
