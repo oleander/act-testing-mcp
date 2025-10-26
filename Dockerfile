@@ -2,16 +2,14 @@
 
 FROM node:20-alpine AS deps
 WORKDIR /app
-
-COPY package.json package-lock.json ./
+COPY package.json ./
 RUN npm install --omit=dev --ignore-scripts --no-audit --no-fund
 
 FROM alpine:3.20 AS act-installer
-
 RUN apk add --no-cache ca-certificates curl tar && \
     update-ca-certificates
 
-ARG ACT_VERSION="0.2.61"
+ARG ACT_VERSION="0.2.82"
 ARG TARGETARCH
 
 ENV ARC=${TARGETARCH/amd64/x86_64}
@@ -25,23 +23,20 @@ RUN tar -xzf /tmp/act.tar.gz -C /usr/local/bin act
 FROM node:20-alpine AS runtime
 
 WORKDIR /app
-
 RUN apk add --no-cache docker-cli dumb-init
 
 ENV NODE_ENV=production \
     PROJECT_ROOT=/workspace \
     ACT_BINARY=/usr/local/bin/act
 
-COPY --from=deps /app/node_modules ./node_modules
-COPY package.json ./package.json
-COPY index.js ./index.js
-COPY utils ./utils
-COPY mcp-metadata.json ./mcp-metadata.json
-
 COPY --from=act-installer /usr/local/bin/act /usr/local/bin/act
 
-ARG METADATA
-LABEL io.docker.server.metadata="$METADATA"
+COPY mcp-metadata.json .
+LABEL io.docker.server.metadata="$(cat mcp-metadata.json)"
+
+COPY --from=deps /app/node_modules ./node_modules
+
+COPY package.json index.js utils/ ./
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD node -e "process.exit(0)"
