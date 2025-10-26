@@ -13,6 +13,8 @@
     "test:coverage": "c8 ava test/**/*.test.js",
     "test:watch": "ava test/**/*.test.js --watch",
     "dev": "node --inspect index.js",
+    "docker:build": "./build-docker.sh",
+    "docker:run": "./run-docker.sh",
     "compatibility:baseline": "node scripts/check-act-compatibility.js create-baseline",
     "compatibility:check": "node scripts/check-act-compatibility.js check",
     "compatibility:report": "node scripts/check-act-compatibility.js report",
