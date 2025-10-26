@@ -2,8 +2,8 @@ name: CD
 
 on:
   workflow_run:
-    workflows: [CI]
     types: [completed]
+    workflows: [CI]
     branches: [main, feature/new-dockerfile]
 
 permissions:
