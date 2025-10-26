@@ -48,7 +48,5 @@ jobs:
             MCP_METADATA=${{ steps.mcp-metadata.outputs.metadata }}
           cache-from: |
             type=gha
-            type=registry,ref=${{ env.BASE_IMAGE_TAG }}-cache
           cache-to: |
             type=gha,mode=max
-            type=registry,ref=${{ env.BASE_IMAGE_TAG }}-cache,mode=max
