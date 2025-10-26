@@ -1,7 +1,8 @@
 import { execSync } from "child_process";
-import { existsSync, writeFileSync } from "fs";
+import { existsSync, writeFileSync, mkdirSync, unlinkSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
+import { randomUUID } from "crypto";
 
 // Get project root dynamically
 function findProjectRoot() {
@@ -137,6 +138,46 @@ export function createEventFile(eventData) {
   const eventFile = join(PROJECT_ROOT, ".act-event.json");
   writeFileSync(eventFile, JSON.stringify(eventData, null, 2));
   return eventFile;
+}
+
+/**
+ * Validate workflow content by writing it to a temporary file and running act --list
+ * @param {string} content - Workflow YAML content to validate
+ * @param {object} options - Optional overrides for testing
+ * @param {string} [options.projectRoot=PROJECT_ROOT] - Project root directory
+ * @param {function} [options.actRunner=runActCommand] - Function to execute act commands
+ * @returns {{success: boolean, output: string, error: string|null}}
+ */
+export function validateWorkflowContent(
+  content,
+  { projectRoot = PROJECT_ROOT, actRunner = runActCommand } = {},
+) {
+  if (typeof content !== "string") {
+    throw new TypeError("Workflow content must be a string");
+  }
+
+  const workflowsDir = join(projectRoot, ".github/workflows");
+  if (!existsSync(workflowsDir)) {
+    mkdirSync(workflowsDir, { recursive: true });
+  }
+
+  const tempFileName = `__temp-workflow-${randomUUID()}.yml`;
+  const tempFilePath = join(workflowsDir, tempFileName);
+  const relativePath = `.github/workflows/${tempFileName}`;
+
+  writeFileSync(tempFilePath, content, "utf8");
+
+  try {
+    return actRunner(["--list", "-W", relativePath], { cwd: projectRoot });
+  } finally {
+    try {
+      if (existsSync(tempFilePath)) {
+        unlinkSync(tempFilePath);
+      }
+    } catch (error) {
+      // Ignore cleanup errors
+    }
+  }
 }
 
 /**
