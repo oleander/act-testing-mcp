@@ -4,7 +4,7 @@ on:
   workflow_run:
     types: [completed]
     workflows: [CI]
-    branches: [main, feature/new-dockerfile]
+    branches: [main]
 
 permissions:
   contents: read
