@@ -13,3 +13,4 @@
 # Set some useful environment variables
 --env ACTIONS_STEP_DEBUG=false
 --env RUNNER_DEBUG=false
+--network bridge

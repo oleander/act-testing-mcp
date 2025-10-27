@@ -14,8 +14,8 @@ import {
   buildActArgs,
   createEventFile,
   checkSystemRequirements,
-  PROJECT_ROOT,
   ACT_BINARY,
+  resolveProjectRoot,
 } from "./utils/act-helpers.js";
 
 // Initialize MCP server
@@ -39,7 +39,13 @@ const tools = [
       "List all available GitHub Actions workflows in the repository",
     inputSchema: {
       type: "object",
-      properties: {},
+      properties: {
+        projectRoot: {
+          type: "string",
+          description:
+            "Override the project root path where workflows should be located",
+        },
+      },
       required: [],
     },
   },
@@ -81,6 +87,11 @@ const tools = [
           type: "object",
           description: "Custom event data to simulate specific scenarios",
         },
+        projectRoot: {
+          type: "string",
+          description:
+            "Override the project root path for executing the workflow",
+        },
       },
       required: ["workflow"],
     },
@@ -95,6 +106,11 @@ const tools = [
           type: "string",
           description: "Workflow file name to validate",
         },
+        projectRoot: {
+          type: "string",
+          description:
+            "Override the project root path used to locate the workflow",
+        },
       },
       required: ["workflow"],
     },
@@ -104,7 +120,13 @@ const tools = [
     description: "Check act configuration and Docker setup",
     inputSchema: {
       type: "object",
-      properties: {},
+      properties: {
+        projectRoot: {
+          type: "string",
+          description:
+            "Override the project root path used when checking the environment",
+        },
+      },
       required: [],
     },
   },
@@ -116,12 +138,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 });
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  const { name, arguments: args } = request.params;
+  const { name, arguments: rawArgs } = request.params;
+  const args = rawArgs ?? {};
 
   try {
     switch (name) {
       case "list_workflows": {
-        const { workflows, error } = getWorkflows();
+        const projectRoot = resolveProjectRoot(args.projectRoot);
+        const { workflows, error } = getWorkflows(projectRoot);
         if (error) {
           return {
             content: [
@@ -161,7 +185,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           env,
           secrets,
           eventData,
+          projectRoot: projectRootOverride,
         } = args;
+        const projectRoot = resolveProjectRoot(projectRootOverride);
 
         let actArgs = buildActArgs({
           workflow,
@@ -175,11 +201,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         // Handle custom event data
         let eventFile = null;
         if (eventData) {
-          eventFile = createEventFile(eventData);
+          eventFile = createEventFile(eventData, projectRoot);
           actArgs.push("--eventpath", eventFile);
         }
 
-        const result = runActCommand(actArgs);
+        const result = runActCommand(actArgs, { cwd: projectRoot });
 
         // Clean up temporary event file
         if (eventFile && existsSync(eventFile)) {
@@ -203,8 +229,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case "validate_workflow": {
-        const { workflow } = args;
-        const workflowPath = join(PROJECT_ROOT, ".github/workflows", workflow);
+        const { workflow, projectRoot: projectRootOverride } = args;
+        const projectRoot = resolveProjectRoot(projectRootOverride);
+        const workflowPath = join(projectRoot, ".github/workflows", workflow);
 
         if (!existsSync(workflowPath)) {
           return {
@@ -218,11 +245,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }
 
         // Use act to validate by doing a dry-run
-        const result = runActCommand([
-          "--list",
-          "-W",
-          `.github/workflows/${workflow}`,
-        ]);
+        const result = runActCommand(
+          ["--list", "-W", `.github/workflows/${workflow}`],
+          { cwd: projectRoot },
+        );
 
         return {
           content: [
@@ -237,7 +263,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case "act_doctor": {
-        const checks = checkSystemRequirements();
+        const projectRoot = resolveProjectRoot(args.projectRoot);
+        const checks = checkSystemRequirements(projectRoot);
 
         const formatCheck = (check) => {
           switch (check.type) {
@@ -258,7 +285,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               type: "text",
               text:
                 `🔍 **Act Testing Environment Check**\n\n${checks.map(formatCheck).join("\n")}\n\n` +
-                `**Project Root:** ${PROJECT_ROOT}\n` +
+                `**Project Root:** ${projectRoot}\n` +
                 `**Act Binary:** ${ACT_BINARY}`,
             },
           ],

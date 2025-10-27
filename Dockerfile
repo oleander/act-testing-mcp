@@ -26,7 +26,7 @@ RUN tar -xzf /tmp/act.tar.gz -C /usr/local/bin act
 FROM node:20-alpine AS runtime
 
 WORKDIR /app
-RUN apk add --no-cache docker-cli dumb-init
+RUN apk add --no-cache docker-cli dumb-init bash
 
 ENV NODE_ENV=production \
     PROJECT_ROOT=/workspace \
@@ -42,6 +42,7 @@ COPY --from=deps /app/node_modules ./node_modules
 
 COPY package.json index.js ./
 COPY utils/ ./utils/
+COPY .actrc .actrc
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD node -e "process.exit(0)"
@@ -49,5 +50,6 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
 ENV DOCKER_HOST=unix:///var/run/docker.sock
 RUN mkdir -p /app/.github/workflows
 
+SHELL ["/bin/bash", "-lc"]
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
-CMD ["node", "index.js"]⏎
+CMD ["node", "index.js"]
