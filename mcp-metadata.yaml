@@ -1,7 +1,7 @@
 name: act-testing-mcp
 description: MCP server for testing GitHub Actions workflows locally using nektos/act
 
-longLived: true
+longLived: false
 
 command:
   - node
