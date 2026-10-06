@@ -1,6 +1,53 @@
 import test from "ava";
 import { execSync } from "child_process";
-import { isActAvailable } from "../utils/act-helpers.js";
+import { existsSync, readFileSync, mkdtempSync, readdirSync } from "fs";
+import { tmpdir } from "os";
+import { join, isAbsolute, dirname } from "path";
+import {
+  isActAvailable,
+  validateWorkflowContent,
+} from "../utils/act-helpers.js";
+
+test("validateWorkflowContent passes temp path to act and cleans up", (t) => {
+  const projectRoot = mkdtempSync(join(tmpdir(), "act-test-root-"));
+  let seen;
+  const actRunner = (args, options) => {
+    const path = args[args.indexOf("-W") + 1];
+    seen = { args, options, path, content: readFileSync(path, "utf8") };
+    return { success: true, output: "", error: null };
+  };
+
+  const result = validateWorkflowContent("name: x\n", {
+    projectRoot,
+    actRunner,
+  });
+
+  t.true(result.success);
+  t.is(seen.args[0], "--list");
+  t.true(isAbsolute(seen.path));
+  t.is(seen.content, "name: x\n");
+  t.is(seen.options.cwd, projectRoot);
+  t.false(existsSync(dirname(seen.path)));
+  t.deepEqual(readdirSync(projectRoot), []);
+});
+
+test("validateWorkflowContent cleans up when runner throws", (t) => {
+  const projectRoot = mkdtempSync(join(tmpdir(), "act-test-root-"));
+  let path;
+  const actRunner = (args) => {
+    path = args[args.indexOf("-W") + 1];
+    throw new Error("boom");
+  };
+
+  t.throws(() => validateWorkflowContent("a: b", { projectRoot, actRunner }), {
+    message: "boom",
+  });
+  t.false(existsSync(dirname(path)));
+});
+
+test("validateWorkflowContent rejects non-string content", (t) => {
+  t.throws(() => validateWorkflowContent(42), { instanceOf: TypeError });
+});
 
 // Basic smoke tests to get started
 test("act is available in system", (t) => {

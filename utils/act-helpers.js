@@ -1,8 +1,8 @@
 import { execSync } from "child_process";
-import { existsSync, writeFileSync, mkdirSync, unlinkSync } from "fs";
+import { existsSync, writeFileSync, mkdtempSync, rmSync } from "fs";
+import { tmpdir } from "os";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
-import { randomUUID } from "crypto";
 
 // Get project root dynamically
 function findProjectRoot() {
@@ -156,24 +156,15 @@ export function validateWorkflowContent(
     throw new TypeError("Workflow content must be a string");
   }
 
-  const workflowsDir = join(projectRoot, ".github/workflows");
-  if (!existsSync(workflowsDir)) {
-    mkdirSync(workflowsDir, { recursive: true });
-  }
-
-  const tempFileName = `__temp-workflow-${randomUUID()}.yml`;
-  const tempFilePath = join(workflowsDir, tempFileName);
-  const relativePath = `.github/workflows/${tempFileName}`;
-
-  writeFileSync(tempFilePath, content, "utf8");
+  const tempDir = mkdtempSync(join(tmpdir(), "act-validate-"));
 
   try {
-    return actRunner(["--list", "-W", relativePath], { cwd: projectRoot });
+    const tempFilePath = join(tempDir, "workflow.yml");
+    writeFileSync(tempFilePath, content, "utf8");
+    return actRunner(["--list", "-W", tempFilePath], { cwd: projectRoot });
   } finally {
     try {
-      if (existsSync(tempFilePath)) {
-        unlinkSync(tempFilePath);
-      }
+      rmSync(tempDir, { recursive: true, force: true });
     } catch (error) {
       // Ignore cleanup errors
     }
