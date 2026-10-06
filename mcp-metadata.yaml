@@ -1,0 +1,23 @@
+name: act-testing-mcp
+description: MCP server for testing GitHub Actions workflows locally using nektos/act
+command:
+  - node
+  - index.js
+env:
+  - name: PROJECT_ROOT
+    value: "{{act-testing-mcp.project-root}}"
+  - name: NODE_ENV
+    value: production
+secrets:
+  - name: act-testing-mcp.GITHUB_TOKEN
+    env: GITHUB_TOKEN
+config:
+  - name: act-testing-mcp
+    type: object
+    properties:
+      project-root:
+        type: string
+        description: Root directory for GitHub Actions workflows
+        default: /workspace
+    required:
+      - project-root
