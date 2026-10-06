@@ -1,12 +1,12 @@
 import test from "ava";
 import { execSync } from "child_process";
-import { writeFileSync, unlinkSync, existsSync } from "fs";
-import { join } from "path";
+import { existsSync } from "fs";
 import {
   runActCommand,
   getWorkflows,
   buildActArgs,
   checkSystemRequirements,
+  validateWorkflowContent,
   PROJECT_ROOT,
   ACT_BINARY,
 } from "../utils/act-helpers.js";
@@ -131,29 +131,11 @@ jobs:
       - run: echo "test"
 `;
 
-  // Test the validation logic by simulating what the tool does
+  const { response, tempPath } = validateWorkflowContent(validYaml);
 
-  const timestamp = Date.now();
-  const tempFilename = `temp-validate-${timestamp}.yml`;
-  const tempPath = join(PROJECT_ROOT, ".github/workflows", tempFilename);
-
-  let result;
-  try {
-    writeFileSync(tempPath, validYaml, "utf8");
-    result = runActCommand(["--list", "-W", `.github/workflows/${tempFilename}`]);
-
-    t.true(typeof result === "object", "Should return an object");
-    t.true(typeof result.success === "boolean", "Should have success boolean");
-    
-    // Note: result.success may be false if act/docker is not available
-    // but the test validates the structure is correct
-  } finally {
-    if (existsSync(tempPath)) {
-      unlinkSync(tempPath);
-    }
-  }
-
-  // Verify cleanup
+  // Note: may report failure if act/docker is not available
+  t.is(response.content[0].type, "text");
+  t.regex(response.content[0].text, /^(✅|❌)/);
   t.false(existsSync(tempPath), "Temporary file should be cleaned up");
 });
 
@@ -165,43 +147,19 @@ jobs:
     runs-on: ubuntu-latest
 `;
 
-  const timestamp = Date.now();
-  const tempFilename = `temp-validate-${timestamp}.yml`;
-  const tempPath = join(PROJECT_ROOT, ".github/workflows", tempFilename);
+  const { response, tempPath } = validateWorkflowContent(invalidYaml);
 
-  let result;
-  try {
-    writeFileSync(tempPath, invalidYaml, "utf8");
-    result = runActCommand(["--list", "-W", `.github/workflows/${tempFilename}`]);
-
-    t.true(typeof result === "object", "Should return an object");
-    t.true(typeof result.success === "boolean", "Should have success boolean");
-    
-    // Invalid YAML should result in failure
-    if (result.success === false) {
-      t.truthy(result.error, "Should have error message for invalid YAML");
-    }
-  } finally {
-    if (existsSync(tempPath)) {
-      unlinkSync(tempPath);
-    }
-  }
-
-  // Verify cleanup even on failure
+  t.is(response.content[0].type, "text");
+  t.regex(response.content[0].text, /^(✅|❌)/);
   t.false(existsSync(tempPath), "Temporary file should be cleaned up even on failure");
 });
 
 test("validate_workflow_content generates unique filenames", (t) => {
-  const timestamp1 = Date.now();
-  const tempFilename1 = `temp-validate-${timestamp1}.yml`;
-  
-  // Small delay to ensure different timestamp
-  const timestamp2 = Date.now() + 1;
-  const tempFilename2 = `temp-validate-${timestamp2}.yml`;
+  const yaml = "name: T\non: [push]\njobs: {}\n";
+  const a = validateWorkflowContent(yaml);
+  const b = validateWorkflowContent(yaml);
 
-  t.not(tempFilename1, tempFilename2, "Should generate unique filenames");
-  t.true(tempFilename1.startsWith("temp-validate-"), "Should follow naming pattern");
-  t.true(tempFilename1.endsWith(".yml"), "Should have .yml extension");
-  t.true(tempFilename2.startsWith("temp-validate-"), "Should follow naming pattern");
-  t.true(tempFilename2.endsWith(".yml"), "Should have .yml extension");
+  t.not(a.tempFilename, b.tempFilename, "Should generate unique filenames");
+  t.regex(a.tempFilename, /^temp-validate-.+\.yml$/);
+  t.regex(b.tempFilename, /^temp-validate-.+\.yml$/);
 });

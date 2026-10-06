@@ -1,5 +1,6 @@
 
 export IMAGE := "oleander/act-testing-mcp:latest"
+export GHCR_IMAGE := "ghcr.io/oleander/act-testing-mcp:latest"
 
 run-gateway: build-mcp
     docker mcp gateway run --servers "docker://${IMAGE}"
@@ -22,6 +23,6 @@ test-container-act:
     docker run --rm "${IMAGE}" act --version
 
 docker-pull-mcp-image:
-    docker pull "ghcr.io/${IMAGE}"
+    docker pull "${GHCR_IMAGE}"
 verify-labels: docker-pull-mcp-image
-    docker mcp gateway run --servers "docker://${IMAGE}"
+    docker mcp gateway run --servers "docker://${GHCR_IMAGE}"
