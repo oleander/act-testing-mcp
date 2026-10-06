@@ -1,5 +1,6 @@
 import { execSync } from "child_process";
-import { existsSync, writeFileSync } from "fs";
+import { existsSync, writeFileSync, mkdtempSync, rmSync } from "fs";
+import { tmpdir } from "os";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -137,6 +138,37 @@ export function createEventFile(eventData) {
   const eventFile = join(PROJECT_ROOT, ".act-event.json");
   writeFileSync(eventFile, JSON.stringify(eventData, null, 2));
   return eventFile;
+}
+
+/**
+ * Validate workflow content by writing it to a temporary file and running act --list
+ * @param {string} content - Workflow YAML content to validate
+ * @param {object} options - Optional overrides for testing
+ * @param {string} [options.projectRoot=PROJECT_ROOT] - Project root directory
+ * @param {function} [options.actRunner=runActCommand] - Function to execute act commands
+ * @returns {{success: boolean, output: string, error: string|null}}
+ */
+export function validateWorkflowContent(
+  content,
+  { projectRoot = PROJECT_ROOT, actRunner = runActCommand } = {},
+) {
+  if (typeof content !== "string") {
+    throw new TypeError("Workflow content must be a string");
+  }
+
+  const tempDir = mkdtempSync(join(tmpdir(), "act-validate-"));
+
+  try {
+    const tempFilePath = join(tempDir, "workflow.yml");
+    writeFileSync(tempFilePath, content, "utf8");
+    return actRunner(["--list", "-W", tempFilePath], { cwd: projectRoot });
+  } finally {
+    try {
+      rmSync(tempDir, { recursive: true, force: true });
+    } catch (error) {
+      // Ignore cleanup errors
+    }
+  }
 }
 
 /**

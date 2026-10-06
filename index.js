@@ -16,6 +16,7 @@ import {
   checkSystemRequirements,
   PROJECT_ROOT,
   ACT_BINARY,
+  validateWorkflowContent,
 } from "./utils/act-helpers.js";
 
 // Initialize MCP server
@@ -106,6 +107,20 @@ const tools = [
       type: "object",
       properties: {},
       required: [],
+    },
+  },
+  {
+    name: "validate_workflow_content",
+    description: "Validate raw workflow YAML content without saving a file",
+    inputSchema: {
+      type: "object",
+      properties: {
+        content: {
+          type: "string",
+          description: "Workflow YAML content to validate",
+        },
+      },
+      required: ["content"],
     },
   },
 ];
@@ -231,6 +246,22 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               text: result.success
                 ? `✅ Workflow ${workflow} is valid!\n\n${result.output}`
                 : `❌ Workflow ${workflow} has issues:\n\n${result.error}`,
+            },
+          ],
+        };
+      }
+
+      case "validate_workflow_content": {
+        const { content } = args;
+        const result = validateWorkflowContent(content);
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: result.success
+                ? `✅ Workflow content is valid!\n\n${result.output}`
+                : `❌ Workflow content has issues:\n\n${result.error}`,
             },
           ],
         };
