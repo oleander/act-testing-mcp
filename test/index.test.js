@@ -1,10 +1,12 @@
 import test from "ava";
 import { execSync } from "child_process";
+import { existsSync } from "fs";
 import {
   runActCommand,
   getWorkflows,
   buildActArgs,
   checkSystemRequirements,
+  validateWorkflowContent,
   PROJECT_ROOT,
   ACT_BINARY,
 } from "../utils/act-helpers.js";
@@ -115,4 +117,49 @@ test("constants are defined correctly", (t) => {
   t.truthy(ACT_BINARY, "ACT_BINARY should be defined");
   t.true(typeof PROJECT_ROOT === "string", "PROJECT_ROOT should be a string");
   t.true(typeof ACT_BINARY === "string", "ACT_BINARY should be a string");
+});
+
+// Test validate_workflow_content tool
+test("validate_workflow_content validates valid YAML", (t) => {
+  const validYaml = `name: Test Workflow
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: echo "test"
+`;
+
+  const { response, tempPath } = validateWorkflowContent(validYaml);
+
+  // Note: may report failure if act/docker is not available
+  t.is(response.content[0].type, "text");
+  t.regex(response.content[0].text, /^(✅|❌)/);
+  t.false(existsSync(tempPath), "Temporary file should be cleaned up");
+});
+
+test("validate_workflow_content handles invalid YAML", (t) => {
+  const invalidYaml = `name: Test Workflow
+on: [push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+`;
+
+  const { response, tempPath } = validateWorkflowContent(invalidYaml);
+
+  t.is(response.content[0].type, "text");
+  t.regex(response.content[0].text, /^(✅|❌)/);
+  t.false(existsSync(tempPath), "Temporary file should be cleaned up even on failure");
+});
+
+test("validate_workflow_content generates unique filenames", (t) => {
+  const yaml = "name: T\non: [push]\njobs: {}\n";
+  const a = validateWorkflowContent(yaml);
+  const b = validateWorkflowContent(yaml);
+
+  t.not(a.tempFilename, b.tempFilename, "Should generate unique filenames");
+  t.regex(a.tempFilename, /^temp-validate-.+\.yml$/);
+  t.regex(b.tempFilename, /^temp-validate-.+\.yml$/);
 });

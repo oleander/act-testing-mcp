@@ -1,9 +1,10 @@
+# syntax=docker/dockerfile:labs
+
 FROM node:20-alpine AS deps
 
 WORKDIR /app
-COPY package.json pnpm-lock.yaml ./
-RUN corepack enable \
-    && pnpm install --prod --ignore-scripts --frozen-lockfile
+COPY package.json package-lock.json ./
+RUN npm install --omit=dev --ignore-scripts --no-audit --no-fund
 
 FROM alpine:3.22 AS act-installer
 RUN apk add --no-cache ca-certificates curl tar \

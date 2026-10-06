@@ -1,5 +1,6 @@
 import { execSync } from "child_process";
-import { existsSync, writeFileSync } from "fs";
+import { existsSync, writeFileSync, unlinkSync } from "fs";
+import { randomUUID } from "node:crypto";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -137,6 +138,58 @@ export function createEventFile(eventData) {
   const eventFile = join(PROJECT_ROOT, ".act-event.json");
   writeFileSync(eventFile, JSON.stringify(eventData, null, 2));
   return eventFile;
+}
+
+/**
+ * Validate workflow YAML content by writing it to a uniquely named temp file
+ * @param {string} yamlContent - Workflow YAML content
+ * @returns {{response: object, tempFilename: string, tempPath: string}}
+ */
+export function validateWorkflowContent(yamlContent) {
+  const tempFilename = `temp-validate-${randomUUID()}.yml`;
+  const tempPath = join(PROJECT_ROOT, ".github/workflows", tempFilename);
+
+  let result;
+  try {
+    writeFileSync(tempPath, yamlContent, "utf8");
+    result = runActCommand(["--list", "-W", `.github/workflows/${tempFilename}`]);
+  } catch (error) {
+    return {
+      response: {
+        content: [
+          {
+            type: "text",
+            text: `❌ Error validating workflow content: ${error.message}`,
+          },
+        ],
+      },
+      tempFilename,
+      tempPath,
+    };
+  } finally {
+    if (existsSync(tempPath)) {
+      try {
+        unlinkSync(tempPath);
+      } catch (cleanupError) {
+        console.error(`Failed to clean up temp file: ${cleanupError.message}`);
+      }
+    }
+  }
+
+  return {
+    response: {
+      content: [
+        {
+          type: "text",
+          text: result.success
+            ? `✅ Workflow content is valid!\n\n${result.output}`
+            : `❌ Workflow content has issues:\n\n${result.error}`,
+        },
+      ],
+    },
+    tempFilename,
+    tempPath,
+  };
 }
 
 /**

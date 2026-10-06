@@ -6,13 +6,14 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { existsSync } from "fs";
+import { existsSync, writeFileSync, unlinkSync } from "fs";
 import { join } from "path";
 import {
   runActCommand,
   getWorkflows,
   buildActArgs,
   createEventFile,
+  validateWorkflowContent,
   checkSystemRequirements,
   PROJECT_ROOT,
   ACT_BINARY,
@@ -97,6 +98,21 @@ const tools = [
         },
       },
       required: ["workflow"],
+    },
+  },
+  {
+    name: "validate_workflow_content",
+    description:
+      "Validates GitHub Actions workflow YAML content directly from a string. Returns validation results including syntax errors and warnings.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        yamlContent: {
+          type: "string",
+          description: "The complete YAML workflow content as a string",
+        },
+      },
+      required: ["yamlContent"],
     },
   },
   {
@@ -234,6 +250,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             },
           ],
         };
+      }
+
+      case "validate_workflow_content": {
+        const { yamlContent } = args;
+
+        return validateWorkflowContent(yamlContent).response;
       }
 
       case "act_doctor": {
